@@ -3,17 +3,17 @@ resource "aws_vpc" "demo" {
   instance_tenancy = "default"
 }
 
-resource "aws_subnet" "sub1b" {
+resource "aws_subnet" "sub1a" {
   vpc_id     = aws_vpc.demo.id
   cidr_block = "10.0.1.0/24"
-  availability_zone = "ap-south-1b"
+  availability_zone = "ap-south-1a"
   map_public_ip_on_launch = true
 }
 
-resource "aws_subnet" "sub1c" {
+resource "aws_subnet" "sub1b" {
   vpc_id     = aws_vpc.demo.id
   cidr_block = "10.0.2.0/24"
-  availability_zone = "ap-south-1c"
+  availability_zone = "ap-south-1b"
   map_public_ip_on_launch = true
 }
 
@@ -22,7 +22,7 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_route_table" "rt" {
-  vpc_id = "aws_vpc.myvpc.id"
+  vpc_id = "aws_vpc.demo.id"
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -31,12 +31,12 @@ resource "aws_route_table" "rt" {
 }
 
 resource "aws_route_table_association" "rt1" {
-  subnet_id      = aws_subnet.sub1b.id
+  subnet_id      = aws_subnet.sub1a.id
   route_table_id = aws_route_table.rt.id
 }
 
 resource "aws_route_table_association" "rt2" {
-  subnet_id      = aws_subnet.sub1c.id
+  subnet_id      = aws_subnet.sub1b.id
   route_table_id = aws_route_table.rt.id
 }
 
@@ -71,14 +71,14 @@ resource "aws_instance" "task1" {
   ami           = "ami-03bb6d83c60fc5f7c"
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.vpcsg.id]
-  subnet_id = aws_subnet.sub1b.id
+  subnet_id = aws_subnet.sub1a.id
 }
 
 resource "aws_instance" "task2" {
   ami           = "ami-03bb6d83c60fc5f7c"
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.vpcsg.id]
-  subnet_id = aws_subnet.sub1c.id
+  subnet_id = aws_subnet.sub1b.id
 }
 
 resource "aws_s3_bucket" "s3" {
@@ -90,7 +90,7 @@ resource "aws_lb" "alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.vpcsg.id]
-  subnets            = [aws_subnet.sub1b.id,aws_subnet.sub1c.id]
+  subnets            = [aws_subnet.sub1a.id,aws_subnet.sub1b.id]
 }
 resource "aws_lb_target_group" "alb-tg" {
   name        = "alb-tg"
