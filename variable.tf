@@ -14,6 +14,3 @@ variable "ami"{
     default = "ami-03bb6d83c60fc5f7c"
 }
 
-variable "vpc-sg"{
-    default = [aws_security_group.vpcsg.id]
-}
