@@ -70,14 +70,14 @@ resource "aws_security_group" "vpcsg" {
 resource "aws_instance" "task1" {
   ami           = "ami-03bb6d83c60fc5f7c"
   instance_type = "t2.micro"
-  vpc_security_group_ids = var.vpc-sg
+  vpc_security_group_ids = [aws_security_group.vpcsg.id]
   subnet_id = aws_subnet.sub1a.id
 }
 
 resource "aws_instance" "task2" {
   ami           = "ami-03bb6d83c60fc5f7c"
   instance_type = "t2.micro"
-  vpc_security_group_ids = var.vpc-sg
+  vpc_security_group_ids = [aws_security_group.vpcsg.id]
   subnet_id = aws_subnet.sub1b.id
 }
 
@@ -89,7 +89,7 @@ resource "aws_lb" "alb" {
   name               = "task-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = var.vpc-sg
+  security_groups    = [aws_security_group.vpcsg.id]
   subnets            = [aws_subnet.sub1a.id,aws_subnet.sub1b.id]
 }
 
