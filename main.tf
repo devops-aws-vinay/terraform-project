@@ -1,18 +1,18 @@
 resource "aws_vpc" "demo" {
-  cidr_block = var.vpc-cidrip
+  cidr_block = "10.0.0.0/16"
   instance_tenancy = "default"
 }
 
 resource "aws_subnet" "sub1a" {
   vpc_id     = aws_vpc.demo.id
-  cidr_block = var.sub1a-ip
+  cidr_block = "10.0.1.0/24"
   availability_zone = "ap-south-1a"
   map_public_ip_on_launch = true
 }
 
 resource "aws_subnet" "sub1b" {
   vpc_id     = aws_vpc.demo.id
-  cidr_block = var.sub1b-ip
+  cidr_block = "10.0.2.0/24"
   availability_zone = "ap-south-1b"
   map_public_ip_on_launch = true
 }
@@ -68,14 +68,14 @@ resource "aws_security_group" "vpcsg" {
 }
 
 resource "aws_instance" "task1" {
-  ami           = "ami-03bb6d83c60fc5f7c"
+  ami           = var.ami
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.vpcsg.id]
   subnet_id = aws_subnet.sub1a.id
 }
 
 resource "aws_instance" "task2" {
-  ami           = "ami-03bb6d83c60fc5f7c"
+  ami           = var.ami
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.vpcsg.id]
   subnet_id = aws_subnet.sub1b.id
