@@ -22,7 +22,7 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_route_table" "rt" {
-  vpc_id = "aws_vpc.demo.id"
+  vpc_id = aws_vpc.demo.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -92,22 +92,27 @@ resource "aws_lb" "alb" {
   security_groups    = [aws_security_group.vpcsg.id]
   subnets            = [aws_subnet.sub1a.id,aws_subnet.sub1b.id]
 }
-resource "aws_lb_target_group" "alb-tg" {
+
+resource "aws_lb_target_group" "tg" {
   name        = "alb-tg"
-  target_type = "alb"
   port        = 80
-  protocol    = "TCP"
+  protocol    = "HTTP"
   vpc_id      = aws_vpc.demo.id
+
+  health_check {
+    path = "/"
+    port = "traffic-port"
+  }
 }
 
 resource "aws_lb_target_group_attachment" "tg1" {
-  target_group_arn = aws_lb_target_group.alb-tg.arn
+  target_group_arn = aws_lb_target_group.tg.arn
   target_id        = aws_instance.task1.id
   port             = 80
 }
 
 resource "aws_lb_target_group_attachment" "tg2" {
-  target_group_arn = aws_lb_target_group.alb-tg.arn
+  target_group_arn = aws_lb_target_group.tg.arn
   target_id        = aws_instance.task2.id
   port             = 80
 }
@@ -118,7 +123,7 @@ resource "aws_lb_listener" "listener" {
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_lb_target_group.alb-tg.arn
+    target_group_arn = aws_lb_target_group.tg.arn
     type             = "forward"
   }
 }
