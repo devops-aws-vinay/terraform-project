@@ -9,7 +9,3 @@ variable "sub1a-ip"{
 variable "sub1b-ip"{
     default = "10.0.2.0/24"
 }
-
-variable "vpc-sg"{
-    default = [aws_security_group.vpcsg.id]
-}
