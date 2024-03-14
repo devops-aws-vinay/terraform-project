@@ -1,18 +1,18 @@
 resource "aws_vpc" "demo" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc-cidrip
   instance_tenancy = "default"
 }
 
 resource "aws_subnet" "sub1a" {
   vpc_id     = aws_vpc.demo.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = var.sub1a-ip
   availability_zone = "ap-south-1a"
   map_public_ip_on_launch = true
 }
 
 resource "aws_subnet" "sub1b" {
   vpc_id     = aws_vpc.demo.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = var.sub1b-ip
   availability_zone = "ap-south-1b"
   map_public_ip_on_launch = true
 }
@@ -70,14 +70,14 @@ resource "aws_security_group" "vpcsg" {
 resource "aws_instance" "task1" {
   ami           = "ami-03bb6d83c60fc5f7c"
   instance_type = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.vpcsg.id]
+  vpc_security_group_ids = var.vpc-sg
   subnet_id = aws_subnet.sub1a.id
 }
 
 resource "aws_instance" "task2" {
   ami           = "ami-03bb6d83c60fc5f7c"
   instance_type = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.vpcsg.id]
+  vpc_security_group_ids = var.vpc-sg
   subnet_id = aws_subnet.sub1b.id
 }
 
@@ -89,7 +89,7 @@ resource "aws_lb" "alb" {
   name               = "task-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.vpcsg.id]
+  security_groups    = var.vpc-sg
   subnets            = [aws_subnet.sub1a.id,aws_subnet.sub1b.id]
 }
 
