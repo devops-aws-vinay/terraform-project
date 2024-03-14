@@ -1,2 +1,2 @@
 # terraform-project
-this project is to automate with terraform
+this project is a to automate with terraform
